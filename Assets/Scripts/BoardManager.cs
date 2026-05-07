@@ -1,4 +1,5 @@
 using System.Net.Mail;
+using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -10,9 +11,20 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private Gem[] gems ;
     [SerializeField] private Gem[,] board ;
     [SerializeField] private float cellSpace ; 
+    [SerializeField] private SwapSystem swapManager ;
     private Vector2 boardOffset ;
+    
+    void OnEnable()
+    {
+        InputHandler.OnSwapRequested += TrySwapGem ; 
+    }
+    void OnDisable()
+    {
+        InputHandler.OnSwapRequested -= TrySwapGem ;
+    }
     void Start()
     {
+        swapManager = GetComponent<SwapSystem>();
         Init() ; 
     }
 
@@ -25,9 +37,10 @@ public class BoardManager : MonoBehaviour
             for(int x = 0 ; x < width ; x++)
             {
                 var currentGem = GetRandomGem() ; 
-                var gemBoardPos = new Vector2Int (x, y) ;
+                var gemBoardPos = new Vector2Int (y, x) ;
                 var gemWorldPos = new Vector2(x*cellSpace, y*cellSpace) - boardOffset ; 
                 board[y,x] = SpawnGem(currentGem , gemWorldPos , gemBoardPos) ; 
+                Debug.Log($"[{y},{x}] : {board[y,x].name} {board[y,x].BoardPosition} , {board[y,x].name} {board[y,x].BoardPosition}") ;  
             }
         }
     }
@@ -39,10 +52,20 @@ public class BoardManager : MonoBehaviour
     public Gem SpawnGem(Gem gem , Vector2 worldPos , Vector2Int boardPos)
     {
         Gem gemToSpawn = Instantiate(gem ,worldPos , Quaternion.identity) ;
-        gemToSpawn.transform.parent = this.transform ;
+        gemToSpawn.transform.parent = transform ;
         gemToSpawn.transform.localPosition = worldPos ; 
         gemToSpawn.Init(boardPos) ;  
         return gemToSpawn ; 
+    }
+    public void TrySwapGem(Gem gemA , Gem gemB)
+    {
+        if(swapManager.IsAdjacent(gemA.BoardPosition , gemB.BoardPosition))
+        {
+           // Debug.Log($"{gemA.name} {gemA.BoardPosition} , {gemB.name} {gemB.BoardPosition}");
+            swapManager.SwapBoardData(board , gemA , gemB) ; 
+            swapManager.UpdateGemPosition(gemA , gemB) ;
+            Debug.Log($"{board[0,0].name} {board[0,0].BoardPosition} , {board[0,1].name} {board[0,1].BoardPosition}") ; 
+        }    
     }
     void Update()
     {
