@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 373997275}
   - component: {fileID: 373997277}
   - component: {fileID: 373997278}
+  - component: {fileID: 373997279}
   m_Layer: 0
   m_Name: Board Manager
   m_TagString: Untagged
@@ -159,6 +160,7 @@ MonoBehaviour:
   - {fileID: 3643857799334382300, guid: e795c81b7267d1945a9f6ce765b35b31, type: 3}
   cellSpace: 1.1
   swapManager: {fileID: 0}
+  matchManager: {fileID: 0}
 --- !u!4 &373997276
 Transform:
   m_ObjectHideFlags: 0
@@ -200,6 +202,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b0cf4219e14d644891bf7285921c286, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &373997279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373997274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c0f936ec8345104587a3e8709067ece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredAdjacentMatches: 2
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

@@ -25,10 +25,6 @@ public class InputHandler : MonoBehaviour
     void Update()
     {
     }
-    bool IsValidSelection()
-    {
-        return selectionCount == 2;
-    }
     public void SelectGem(Gem clickedGem)
     {
         if (selectedGem == null)

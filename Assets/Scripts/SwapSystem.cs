@@ -23,8 +23,12 @@ public class SwapSystem : MonoBehaviour
     public void SwapBoardData(Gem[,] board ,Gem gemA , Gem gemB)
     {
         Gem temp = gemA ;
-        board[gemA.BoardPosition.x , gemA.BoardPosition.y] = gemB ; 
-        board[gemB.BoardPosition.x , gemB.BoardPosition.y] = temp ; 
+        Vector2Int prevAPos = gemA.BoardPosition ; 
+        Vector2Int prevBPos=  gemB.BoardPosition ; 
+        UpdateGemPosition(gemA , gemB) ; 
+        board[prevAPos.x , prevAPos.y] = gemB ; 
+        board[prevBPos.x , prevBPos.y] = temp ; 
+        
     }
     public void UpdateGemPosition( Gem gemA , Gem gemB)
     {

@@ -12,6 +12,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private Gem[,] board ;
     [SerializeField] private float cellSpace ; 
     [SerializeField] private SwapSystem swapManager ;
+    [SerializeField] private Match matchManager ;
     private Vector2 boardOffset ;
     
     void OnEnable()
@@ -25,6 +26,7 @@ public class BoardManager : MonoBehaviour
     void Start()
     {
         swapManager = GetComponent<SwapSystem>();
+        matchManager = GetComponent<Match>() ; 
         Init() ; 
     }
 
@@ -63,8 +65,12 @@ public class BoardManager : MonoBehaviour
         {
            // Debug.Log($"{gemA.name} {gemA.BoardPosition} , {gemB.name} {gemB.BoardPosition}");
             swapManager.SwapBoardData(board , gemA , gemB) ; 
-            swapManager.UpdateGemPosition(gemA , gemB) ;
-            Debug.Log($"{board[0,0].name} {board[0,0].BoardPosition} , {board[0,1].name} {board[0,1].BoardPosition}") ; 
+          //  swapManager.UpdateGemPosition(gemA , gemB) ;
+            if(matchManager.HasMatch(board,gemA.BoardPosition , gemB.BoardPosition))
+            {
+                Debug.Log("MATCH") ; 
+            }
+           // Debug.Log($"{board[0,0].name} {board[0,0].BoardPosition} , {board[0,1].name} {board[0,1].BoardPosition}") ; 
         }    
     }
     void Update()
