@@ -1,11 +1,13 @@
 using System;
 using System.Numerics;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.InputSystem.LowLevel;
 
 public class Match : MonoBehaviour
 {
     [SerializeField] private int requiredAdjacentMatches = 2;
+    [SerializeField] private bool hasMatch = false ; 
     void Start()
     {
 
@@ -18,21 +20,20 @@ public class Match : MonoBehaviour
     }
     public bool HasMatch(Gem[,] board, Vector2Int gemAPos, Vector2Int gemBPos)
     {
-        //int minGemToMatch = 1;
+        //int gemCounter = 1;
         if (IsVerticalSwap(gemAPos, gemBPos))
         {
-            HasVerticalMatch(board , gemAPos , gemBPos) ; 
-        }
-        // else
-        // {
+           return HasVerticalMatch(board , gemAPos , gemBPos) || HasHorizontalMatch(board ,gemAPos, gemBPos);
             
-        // }
+        }
         return false ; 
+    }
+    public bool HasHorizontalMatch(Gem[,] board, Vector2Int gemAPos ,Vector2Int gemBPos){
+       return true ; 
     }
     public bool HasVerticalMatch(Gem[,] board, Vector2Int gemAPos, Vector2Int gemBPos)
     {
-        bool hasMatch = false ; 
-        int minGemToMatch = 1;
+        int gemCounter = 1;
         int horizontalIndex = gemAPos.y;
         int verticalStart = Math.Max(Math.Min(gemAPos.x, gemBPos.x) - requiredAdjacentMatches, 0);
         int verticalEnd = Math.Min(Math.Max(gemAPos.x, gemBPos.x) + requiredAdjacentMatches, board.GetLength(0) - 1);
@@ -44,12 +45,12 @@ public class Match : MonoBehaviour
             if (board[endPointer, horizontalIndex].Type != board[startPointer, horizontalIndex].Type)
             {
                 startPointer = endPointer;
-                minGemToMatch = 1;
+                gemCounter = 1;
             }
             else
             {
-                minGemToMatch++;
-                if (minGemToMatch >= 3)
+                gemCounter++;
+                if (gemCounter >= 3)
                 {
                     hasMatch = true;
                     Debug.Log("MATCH!!!") ; 
@@ -68,6 +69,6 @@ public class Match : MonoBehaviour
     }
     public bool IsVerticalSwap(Vector2Int gemAPos, Vector2Int gemBPos)
     {
-        return Math.Abs(gemAPos.x - gemBPos.x) == 1;
+        return Math.Abs(gemAPos.x - gemBPos.x) == 1 && gemAPos.y == gemBPos.y;
     }
 }
