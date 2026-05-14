@@ -45,4 +45,9 @@ public class Gem : MonoBehaviour
         Vector3 worldPos = GetWorldPosition(swapPos);
         return transform.DOLocalMove(worldPos,SwapSystem.swapDuration) ; 
     }
+    public Tween Destroy()
+    {
+        Vector3 targetScale = Vector3.zero; 
+        return transform.DOScale(targetScale,SwapSystem.destroyDuration) ;
+    }
 }

@@ -6,6 +6,7 @@ public class SwapSystem : MonoBehaviour
 {
     private Match matchManager;
     public static float swapDuration = 0.5f ; 
+    public static float destroyDuration = 0.3f;
     void Start()
     {
         matchManager = GetComponent<Match>();
