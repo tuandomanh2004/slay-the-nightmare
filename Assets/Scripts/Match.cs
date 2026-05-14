@@ -7,6 +7,8 @@ using UnityEngine.InputSystem.LowLevel;
 using System.Collections.Generic;
 using DG.Tweening;
 using System.Collections;
+using Unity.VisualScripting;
+using Unity.Collections;
 
 public class Match : MonoBehaviour
 {
@@ -26,7 +28,7 @@ public class Match : MonoBehaviour
     }
 
     [SerializeField] private int requiredAdjacentMatches = 2;
-    [SerializeField] private List<MatchGroup> matchGroups;
+    [SerializeField] private HashSet<Gem> gemsToDestroy = new HashSet<Gem>() ; 
 
     void Start()
     {
@@ -38,95 +40,113 @@ public class Match : MonoBehaviour
     }
     public bool HasMatch(Gem[,] board, Vector2Int gemAPos, Vector2Int gemBPos)
     {
-        return HasMatchAt(board, gemAPos) | HasMatchAt(board, gemBPos);
+        HashSet<Gem> matchedGemsA = GetMatchedGemsAt(board, gemAPos) ;
+        HashSet<Gem> matchedGemsB = GetMatchedGemsAt(board, gemBPos) ; 
+        matchedGemsA.UnionWith(matchedGemsB);
+        gemsToDestroy = matchedGemsA;
+        return gemsToDestroy.Count > 0 ;
     }
-    public bool HasMatchAt(Gem[,] board, Vector2Int pos)
+    public HashSet<Gem> GetMatchedGemsAt(Gem[,] board, Vector2Int pos)
     {
-        return GetHorizontalMatchesOnBoard(board, pos).Count > 0 | GetVerticalMatchesOnBoard(board, pos).Count > 0;
+        var horizontalMatches = GetHorizontalMatchesOnBoard(board, pos); 
+        var verticalMatches = GetVerticalMatchesOnBoard(board, pos) ;
+
+        var horizontalGemsToDestroy = GetGemsToDestroy(horizontalMatches) ; 
+        var verticalGemsToDestroy = GetGemsToDestroy(verticalMatches) ; 
+
+        horizontalGemsToDestroy.UnionWith(verticalGemsToDestroy) ; 
+        return horizontalGemsToDestroy ;
     } 
     public List<MatchGroup> GetHorizontalMatchesOnBoard(Gem[,] board, Vector2Int gemPos)
     {
-        int gemCounter = 1;
         int verticalIndex = gemPos.x;
-        int boardWidth = board.GetLength(1) - 1;
-        int start = 0, end = start + 1;
+        int boardWidth = board.GetLength(1);
         var matches = new List<MatchGroup>();
-        var match = new MatchGroup();
-        while (end <= boardWidth)
+        
+        int start = 0;
+        while (start < boardWidth)
         {
-            Gem currentGem = board[verticalIndex, end];
-            Gem gemToMatch = board[verticalIndex, start];
-
-            match.matchedGems.Add(gemToMatch);
-            if (currentGem.Type != gemToMatch.Type)
+            int end = start;
+            // Tìm dãy liên tiếp cùng loại
+            while (end < boardWidth && board[verticalIndex, end].Type == board[verticalIndex, start].Type)
             {
-                if (gemCounter >= 3)
-                {
-                    match.Length = gemCounter;
-                    matches.Add(match);
-                }
-                match = new MatchGroup();
-                start = end;
-                gemCounter = 1;
+                end++;
             }
-            else
+            
+            // Nếu dãy >= 3 viên, thêm vào match
+            if (end - start >= 3)
             {
-                gemCounter++;
-                if (gemCounter >= 3)
+                var match = new MatchGroup();
+                for (int i = start; i < end; i++)
                 {
-                    Debug.Log("MATCH!!!");
-                    Debug.Log($"board[{verticalIndex},{start}] -> board[{verticalIndex},{end}]");
-                    match.matchedGems.Add(currentGem);
+                    match.matchedGems.Add(board[verticalIndex, i]);
                 }
+                match.Length = end - start;
+                matches.Add(match);
             }
-            end++;
+            
+            start = end;
         }
-        return matches != null ? matches : null;
+        
+        return matches;
     }
     public List<MatchGroup> GetVerticalMatchesOnBoard(Gem[,] board, Vector2Int gemPos)
     {
-        int gemCounter = 1;
         int horizontalIndex = gemPos.y;
-        int boardHeight = board.GetLength(0) - 1;
-        int start = 0, end = start + 1;
+        int boardHeight = board.GetLength(0);
         var matches = new List<MatchGroup>();
-        var match = new MatchGroup();
-        while (end <= boardHeight)
+        
+        int start = 0;
+        while (start < boardHeight)
         {
-            Gem currentGem = board[end, horizontalIndex];
-            Gem gemToMatch = board[start, horizontalIndex];
-
-            match.matchedGems.Add(gemToMatch);
-            if (currentGem.Type != gemToMatch.Type)
+            int end = start;
+            // Tìm dãy liên tiếp cùng loại
+            while (end < boardHeight && board[end, horizontalIndex].Type == board[start, horizontalIndex].Type)
             {
-                if (gemCounter >= 3)
-                {
-                    match.Length = gemCounter;
-                    matches.Add(match);
-                }
-                match = new MatchGroup();
-                start = end;
-                gemCounter = 1;
-
+                end++;
             }
-            else
+            
+            // Nếu dãy >= 3 viên, thêm vào match
+            if (end - start >= 3)
             {
-                gemCounter++;
-                if (gemCounter >= 3)
+                var match = new MatchGroup();
+                for (int i = start; i < end; i++)
                 {
-                    Debug.Log("MATCH!!!");
-                    Debug.Log($"board[{start},{horizontalIndex}] -> board[{end},{horizontalIndex}]");
-                    match.matchedGems.Add(currentGem);
+                    match.matchedGems.Add(board[i, horizontalIndex]);
                 }
+                match.Length = end - start;
+                matches.Add(match);
             }
-            end++;
+            start = end;
         }
-        return matches != null ? matches : null;
+        
+        return matches;
     }
     public IEnumerator OnMatch()
     {
-        var seq = DOTween.Sequence();
-
+        var seq = DOTween.Sequence() ; 
+        Debug.Log(gemsToDestroy) ; 
+        if(gemsToDestroy != null)
+        {
+            
+            foreach(var gem in gemsToDestroy)
+            {
+                Debug.Log(gem) ; 
+                seq.Join(gem.Destroy()) ; 
+            }
+        }
         yield return seq.WaitForCompletion();
+    }
+    public HashSet<Gem> GetGemsToDestroy(List<MatchGroup> groups)
+    {
+        HashSet<Gem> gemsToDestroy = new HashSet<Gem>();
+        foreach(var group in groups)
+        {
+            foreach(var gem in group.matchedGems)
+            {
+                gemsToDestroy.Add(gem);
+            }
+        }
+        return gemsToDestroy ; 
     }
 }

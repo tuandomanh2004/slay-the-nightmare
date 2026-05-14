@@ -45,7 +45,8 @@ public class SwapSystem : MonoBehaviour
             yield return SwapAnimation(gemA, gemB);
             if (matchManager.HasMatch(board, gemA.BoardPosition, gemB.BoardPosition))
             {
-                Debug.Log("MATCH");
+                Debug.Log("MATCH") ; 
+                StartCoroutine(matchManager.OnMatch()) ; 
             }
             else
             {
