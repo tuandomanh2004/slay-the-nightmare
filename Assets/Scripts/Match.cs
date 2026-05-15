@@ -29,7 +29,7 @@ public class Match : MonoBehaviour
 
     [SerializeField] private int requiredAdjacentMatches = 2;
     [SerializeField] private HashSet<Gem> gemsToDestroy = new HashSet<Gem>() ; 
-
+    [SerializeField] public static event Action<HashSet<Gem>> OnGemsDestroyed ;
     void Start()
     {
 
@@ -124,11 +124,15 @@ public class Match : MonoBehaviour
     }
     public IEnumerator OnMatch()
     {
+        OnGemsDestroyed?.Invoke(gemsToDestroy) ; 
+        yield return PlayGemDestroyAnimation() ; 
+        gemsToDestroy.Clear() ; 
+    }
+    public IEnumerator PlayGemDestroyAnimation()
+    {
         var seq = DOTween.Sequence() ; 
-        Debug.Log(gemsToDestroy) ; 
-        if(gemsToDestroy != null)
+        if(gemsToDestroy != null && gemsToDestroy.Count > 0)
         {
-            
             foreach(var gem in gemsToDestroy)
             {
                 Debug.Log(gem) ; 

@@ -11,12 +11,6 @@ public class SwapSystem : MonoBehaviour
     {
         matchManager = GetComponent<Match>();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     public bool IsAdjacent(Vector2Int currentGem, Vector2Int targetGem)
     {
         int xDiff = Mathf.Abs(currentGem.x - targetGem.x);
@@ -46,7 +40,7 @@ public class SwapSystem : MonoBehaviour
             if (matchManager.HasMatch(board, gemA.BoardPosition, gemB.BoardPosition))
             {
                 Debug.Log("MATCH") ; 
-                StartCoroutine(matchManager.OnMatch()) ; 
+                yield return matchManager.OnMatch() ; 
             }
             else
             {

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using JetBrains.Annotations;
+using Unity.Collections;
 using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEditor.Callbacks;
@@ -15,43 +16,26 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private GameObject backgroundTile;
     [SerializeField] private Gem[] gems;
     [SerializeField] private Gem[,] board;
-    [SerializeField] private SwapSystem swapManager;
-
+    [SerializeField] private SwapSystem swapManager; 
     public static Vector2 BoardOffset { get; private set; }
     public static float CellSpace { get; private set; } = 1.1f;
 
     void OnEnable()
     {
         InputHandler.OnSwapRequested += TrySwapGem;
+        Match.OnGemsDestroyed += RemoveGemsFromBoard ; 
     }
     void OnDisable()
     {
         InputHandler.OnSwapRequested -= TrySwapGem;
+        Match.OnGemsDestroyed -= RemoveGemsFromBoard ;
     }
     void Start()
     {
         swapManager = GetComponent<SwapSystem>();
         InitBoard();
-        //Init();
 
     }
-
-    // void Init()
-    // {
-    //     board = new Gem[height, width];
-    //     BoardOffset = new Vector2((width - 1) * CellSpace / 2, (height - 1) * CellSpace / 2);
-    //     for (int y = 0; y < height; y++)
-    //     {
-    //         for (int x = 0; x < width; x++)
-    //         {
-    //             var currentGem = GetRandomGem();
-    //             var gemBoardPos = new Vector2Int(y, x);
-    //             var gemWorldPos = new Vector2(x * CellSpace, y * CellSpace) - BoardOffset;
-    //             board[y, x] = SpawnGem(currentGem, gemWorldPos, gemBoardPos);
-    //             Debug.Log($"[{y},{x}] : {board[y, x].name} {board[y, x].BoardPosition} , {board[y, x].name} {board[y, x].BoardPosition}");
-    //         }
-    //     }
-    // }
     private Gem GetRandomGem()
     {
         int gemIndex = Random.Range(0, gems.Length);
@@ -83,7 +67,6 @@ public class BoardManager : MonoBehaviour
             for (int x = 0; x < width; x++)
             {
                 List<Gem> possibleGems = gems.ToList();
-                // vertical check
                 if (x >= 2)
                 {
                     if (board[y, x - 2].Type == board[y, x - 1].Type)
@@ -107,8 +90,14 @@ public class BoardManager : MonoBehaviour
             }
         }
     }
-    void Update()
+    private void RemoveGemsFromBoard (HashSet<Gem> gemsToDestroy)
     {
+        foreach(var gem in gemsToDestroy)
+        {
+            var pos = gem.BoardPosition ; 
+            board[pos.x , pos.y] = null ;
+            Debug.Log(board[pos.x , pos.y]) ; 
+        }
 
     }
 }
