@@ -149,7 +149,7 @@ public class Match : MonoBehaviour
         {
             foreach(var gem in gemsToDestroy)
             {
-                Debug.Log(gem) ; 
+               // Debug.Log(gem) ; 
                 seq.Join(gem.Destroy(destroyDuration)) ; 
             }
         }

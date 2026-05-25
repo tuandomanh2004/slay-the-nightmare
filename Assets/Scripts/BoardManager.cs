@@ -17,23 +17,23 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private int height;
     [SerializeField] private GameObject backgroundTile;
     [SerializeField] private Gem[] gems;
-    [SerializeField] private Gem[,] board ; 
-    [SerializeField] private SwapSystem swapManager; 
+    [SerializeField] private Gem[,] board;
+    [SerializeField] private SwapSystem swapManager;
     public static Vector2 BoardOffset { get; private set; }
     public static float CellSpace { get; private set; } = 1.1f;
     public Gem[,] Board => board;
-    public int Width => width ; 
-    public int Height => height ;   
+    public int Width => width;
+    public int Height => height;
 
     void OnEnable()
     {
         InputHandler.OnSwapRequested += TrySwapGem;
-        Match.OnGemsDestroyed += RemoveGemsFromBoard ; 
+        Match.OnGemsDestroyed += RemoveGemsFromBoard;
     }
     void OnDisable()
     {
         InputHandler.OnSwapRequested -= TrySwapGem;
-        Match.OnGemsDestroyed -= RemoveGemsFromBoard ;
+        Match.OnGemsDestroyed -= RemoveGemsFromBoard;
     }
     void Start()
     {
@@ -89,28 +89,28 @@ public class BoardManager : MonoBehaviour
                 var currentGem = GetRandomGem(possibleGems);
                 var gemBoardPos = new Vector2Int(y, x);
                 var gemWorldPos = new Vector2(x * CellSpace, y * CellSpace) - BoardOffset;
-                Debug.Log(possibleGems.Count);
-                Debug.Log($"{currentGem} , {gemBoardPos} , {gemWorldPos}");
+                //   Debug.Log(possibleGems.Count);
+                //  Debug.Log($"{currentGem} , {gemBoardPos} , {gemWorldPos}");
                 board[y, x] = SpawnGem(currentGem, gemWorldPos, gemBoardPos);
             }
         }
     }
-    private void RemoveGemsFromBoard (HashSet<Gem> gemsToDestroy)
+    private void RemoveGemsFromBoard(HashSet<Gem> gemsToDestroy)
     {
-        foreach(var gem in gemsToDestroy)
+        foreach (var gem in gemsToDestroy)
         {
-            var pos = gem.BoardPosition ; 
-            board[pos.x , pos.y] = null ;
-            Debug.Log(board[pos.x , pos.y]) ; 
+            var pos = gem.BoardPosition;
+            board[pos.x, pos.y] = null;
+            Debug.Log(board[pos.x, pos.y]);
         }
 
     }
-    public void MoveGemAtCol(int col ,int startRow , int endRow)
+    public void MoveGemAtCol(int col, int startRow, int endRow)
     {
-        var gemAtStartPos = board[startRow,col] ;
-        var newPosition = new Vector2Int(endRow , col) ; 
-        gemAtStartPos.SetBoardPosition(newPosition) ; 
-        board[endRow ,col] = gemAtStartPos ; 
-        board[startRow ,col] = null ;
+        var gemAtStartPos = board[startRow, col];
+        var newPosition = new Vector2Int(endRow, col);
+        gemAtStartPos.SetBoardPosition(newPosition);
+        board[endRow, col] = gemAtStartPos;
+        board[startRow, col] = null;
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Data;
 using System.Runtime.InteropServices;
 using DG.Tweening;
@@ -10,6 +11,7 @@ public class GravitySystem : MonoBehaviour
 {
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private Dictionary<int, List<Gem>> fallingGems;
+    [SerializeField] private Dictionary<int,int> emptySlotsPerColumn ; 
     [SerializeField] private float delayAfterFalling = 0.5f;
     [SerializeField] private float fallingDuration = 0.2f;
 
@@ -17,6 +19,7 @@ public class GravitySystem : MonoBehaviour
     {
         boardManager = GetComponent<BoardManager>();
         fallingGems = new Dictionary<int, List<Gem>>();
+        emptySlotsPerColumn = new Dictionary<int, int>();
     }
 
 
@@ -39,27 +42,28 @@ public class GravitySystem : MonoBehaviour
                 {
                     if (row != posToFall)
                     {
-                        if (!fallingGems.ContainsKey(posToFall))
+                        int fallingDistance = row - posToFall;
+                        if (!fallingGems.ContainsKey(fallingDistance))
                         {
-                            fallingGems[posToFall] = new List<Gem>();
+                            fallingGems[fallingDistance] = new List<Gem>();
                         }
-                        fallingGems[posToFall].Add(currentGem);
+                        fallingGems[fallingDistance].Add(currentGem);
                     }
                     boardManager.MoveGemAtCol(col, row, posToFall);
                     posToFall++;
                 }
             }
+            emptySlotsPerColumn[col] = height - posToFall ; 
+        //    Debug.Log($"col: {col} , {emptySlotsPerColumn[col]}") ; 
         }
     }
     public IEnumerator PlayFallingAnimation()
     {
-        int maxRow = boardManager.Height ; 
-        for (int currentRow = 0 ; currentRow < maxRow ; currentRow++)
+        foreach (var pair in fallingGems.OrderBy(pair => pair.Key))
         {
-            if (!fallingGems.ContainsKey(currentRow)) continue;
-            var seq = DOTween.Sequence();
-            List<Gem> gems = fallingGems[currentRow];
-            foreach (var gem in gems)
+            var seq =  DOTween.Sequence() ; 
+            List<Gem> gems = pair.Value;
+            foreach(var gem in gems)
             {
                 seq.Join(gem.SwapTo(gem.BoardPosition, fallingDuration));
             }

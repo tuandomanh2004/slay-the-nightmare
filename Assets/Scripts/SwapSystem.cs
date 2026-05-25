@@ -6,8 +6,8 @@ using UnityEngine;
 public class SwapSystem : MonoBehaviour
 {
     private Match matchManager;
-    private GravitySystem gravity ; 
-    public float swapDuration = 0.5f ; 
+    private GravitySystem gravity;
+    public float swapDuration = 0.5f;
     void Start()
     {
         matchManager = GetComponent<Match>();
@@ -34,17 +34,17 @@ public class SwapSystem : MonoBehaviour
     {
         if (IsAdjacent(gemA.BoardPosition, gemB.BoardPosition))
         {
-            Debug.Log($"gemA : {gemA.name} {gemA.BoardPosition} , gemB : {gemB.name} {gemB.BoardPosition}");
+            // Debug.Log($"gemA : {gemA.name} {gemA.BoardPosition} , gemB : {gemB.name} {gemB.BoardPosition}");
 
             SwapBoardData(board, gemA, gemB);
-            Debug.Log($"gemA : {gemA.name} {gemA.BoardPosition} , gemB : {gemB.name} {gemB.BoardPosition}");
+            //  Debug.Log($"gemA : {gemA.name} {gemA.BoardPosition} , gemB : {gemB.name} {gemB.BoardPosition}");
             yield return SwapAnimation(gemA, gemB);
             if (matchManager.HasMatch(board, gemA.BoardPosition, gemB.BoardPosition))
             {
-                Debug.Log("MATCH") ; 
-                yield return matchManager.OnMatch() ; 
-                gravity.CollapseBoardData() ; 
-                yield return gravity.PlayFallingAnimation() ; 
+                //  Debug.Log("MATCH") ; 
+                yield return matchManager.OnMatch();
+                gravity.CollapseBoardData();
+                yield return gravity.PlayFallingAnimation();
 
             }
             else
@@ -59,7 +59,7 @@ public class SwapSystem : MonoBehaviour
     {
         // Create a container for managing tweens
         Sequence seq = DOTween.Sequence();
-        seq.Join(gemA.SwapTo(gemA.BoardPosition , swapDuration));
+        seq.Join(gemA.SwapTo(gemA.BoardPosition, swapDuration));
         seq.Join(gemB.SwapTo(gemB.BoardPosition, swapDuration));
         yield return seq.WaitForCompletion();
     }
