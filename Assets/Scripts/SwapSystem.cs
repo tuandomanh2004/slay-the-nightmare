@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using DG.Tweening;
 using UnityEngine;
@@ -5,11 +6,12 @@ using UnityEngine;
 public class SwapSystem : MonoBehaviour
 {
     private Match matchManager;
-    public static float swapDuration = 0.5f ; 
-    public static float destroyDuration = 0.3f;
+    private GravitySystem gravity ; 
+    public float swapDuration = 0.5f ; 
     void Start()
     {
         matchManager = GetComponent<Match>();
+        gravity = GetComponent<GravitySystem>();
     }
     public bool IsAdjacent(Vector2Int currentGem, Vector2Int targetGem)
     {
@@ -41,6 +43,9 @@ public class SwapSystem : MonoBehaviour
             {
                 Debug.Log("MATCH") ; 
                 yield return matchManager.OnMatch() ; 
+                gravity.CollapseBoardData() ; 
+                yield return gravity.PlayFallingAnimation() ; 
+
             }
             else
             {
@@ -54,8 +59,8 @@ public class SwapSystem : MonoBehaviour
     {
         // Create a container for managing tweens
         Sequence seq = DOTween.Sequence();
-        seq.Join(gemA.SwapTo(gemA.BoardPosition));
-        seq.Join(gemB.SwapTo(gemB.BoardPosition));
+        seq.Join(gemA.SwapTo(gemA.BoardPosition , swapDuration));
+        seq.Join(gemB.SwapTo(gemB.BoardPosition, swapDuration));
         yield return seq.WaitForCompletion();
     }
     public void UpdateGemPosition(Gem gemA, Gem gemB)

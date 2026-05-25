@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net.Mail;
 using JetBrains.Annotations;
 using Unity.Collections;
 using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -15,10 +17,13 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private int height;
     [SerializeField] private GameObject backgroundTile;
     [SerializeField] private Gem[] gems;
-    [SerializeField] private Gem[,] board;
+    [SerializeField] private Gem[,] board ; 
     [SerializeField] private SwapSystem swapManager; 
     public static Vector2 BoardOffset { get; private set; }
     public static float CellSpace { get; private set; } = 1.1f;
+    public Gem[,] Board => board;
+    public int Width => width ; 
+    public int Height => height ;   
 
     void OnEnable()
     {
@@ -99,5 +104,13 @@ public class BoardManager : MonoBehaviour
             Debug.Log(board[pos.x , pos.y]) ; 
         }
 
+    }
+    public void MoveGemAtCol(int col ,int startRow , int endRow)
+    {
+        var gemAtStartPos = board[startRow,col] ;
+        var newPosition = new Vector2Int(endRow , col) ; 
+        gemAtStartPos.SetBoardPosition(newPosition) ; 
+        board[endRow ,col] = gemAtStartPos ; 
+        board[startRow ,col] = null ;
     }
 }

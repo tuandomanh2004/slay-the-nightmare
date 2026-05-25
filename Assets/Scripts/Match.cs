@@ -12,6 +12,8 @@ using Unity.Collections;
 
 public class Match : MonoBehaviour
 {
+    [SerializeField] private int minGemToMatch ; 
+    [SerializeField] private float destroyDuration = 0.3f;
     public class MatchGroup
     {
         public int Length;
@@ -74,7 +76,7 @@ public class Match : MonoBehaviour
             }
             
             // Nếu dãy >= 3 viên, thêm vào match
-            if (end - start >= 3)
+            if (end - start >= minGemToMatch)
             {
                 var match = new MatchGroup();
                 for (int i = start; i < end; i++)
@@ -107,7 +109,7 @@ public class Match : MonoBehaviour
             }
             
             // Nếu dãy >= 3 viên, thêm vào match
-            if (end - start >= 3)
+            if (end - start >= minGemToMatch)
             {
                 var match = new MatchGroup();
                 for (int i = start; i < end; i++)
@@ -128,6 +130,18 @@ public class Match : MonoBehaviour
         yield return PlayGemDestroyAnimation() ; 
         gemsToDestroy.Clear() ; 
     }
+    public HashSet<Gem> GetGemsToDestroyOnBoard(Gem[,] board)
+    {
+        HashSet<Gem> gems = new HashSet<Gem>();
+        for(int i = 0 ; i < board.GetLength(0) ; i++)
+        {
+            Vector2Int pos = new Vector2Int(i,i) ; 
+            HashSet<Gem> matchedGems = GetMatchedGemsAt(board,pos) ;  
+            gems.UnionWith(matchedGems) ;                 
+        }
+        SetGemsToDestroy(gems) ; 
+        return gemsToDestroy ; 
+    }
     public IEnumerator PlayGemDestroyAnimation()
     {
         var seq = DOTween.Sequence() ; 
@@ -136,10 +150,15 @@ public class Match : MonoBehaviour
             foreach(var gem in gemsToDestroy)
             {
                 Debug.Log(gem) ; 
-                seq.Join(gem.Destroy()) ; 
+                seq.Join(gem.Destroy(destroyDuration)) ; 
             }
         }
         yield return seq.WaitForCompletion();
+    }
+    public void SetGemsToDestroy(HashSet<Gem> gems)
+    {
+        gemsToDestroy.Clear() ; 
+        gemsToDestroy.UnionWith(gems) ; 
     }
     public HashSet<Gem> GetGemsToDestroy(List<MatchGroup> groups)
     {

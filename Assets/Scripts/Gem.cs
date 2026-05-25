@@ -40,14 +40,14 @@ public class Gem : MonoBehaviour
     {
         OnGemClicked?.Invoke(this) ; 
     }
-    public Tween SwapTo(Vector2Int swapPos)
+    public Tween SwapTo(Vector2Int swapPos , float duration)
     {
         Vector3 worldPos = GetWorldPosition(swapPos);
-        return transform.DOLocalMove(worldPos,SwapSystem.swapDuration) ; 
+        return transform.DOLocalMove(worldPos,duration) ; 
     }
-    public Tween Destroy()
+    public Tween Destroy(float duration)
     {
         Vector3 targetScale = Vector3.zero; 
-        return transform.DOScale(targetScale,SwapSystem.destroyDuration) ;
+        return transform.DOScale(targetScale,duration) ;
     }
 }
