@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Net.Mail;
@@ -21,6 +22,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private SwapSystem swapManager;
     public static Vector2 BoardOffset { get; private set; }
     public static float CellSpace { get; private set; } = 1.1f;
+    public Gem[] Gems => gems ; 
     public Gem[,] Board => board;
     public int Width => width;
     public int Height => height;
@@ -46,7 +48,7 @@ public class BoardManager : MonoBehaviour
         int gemIndex = Random.Range(0, gems.Length);
         return gems[gemIndex];
     }
-    private Gem GetRandomGem(List<Gem> possibleGems)
+    public Gem GetRandomGem(List<Gem> possibleGems)
     {
         int gemIndex = Random.Range(0, possibleGems.Count);
         return possibleGems[gemIndex];
@@ -88,12 +90,17 @@ public class BoardManager : MonoBehaviour
                 }
                 var currentGem = GetRandomGem(possibleGems);
                 var gemBoardPos = new Vector2Int(y, x);
-                var gemWorldPos = new Vector2(x * CellSpace, y * CellSpace) - BoardOffset;
+              //  var gemWorldPos = new Vector2(x * CellSpace, y * CellSpace) - BoardOffset;
+                var gemWorldPos = ConvertToWorldPosition(gemBoardPos) ; 
                 //   Debug.Log(possibleGems.Count);
                 //  Debug.Log($"{currentGem} , {gemBoardPos} , {gemWorldPos}");
                 board[y, x] = SpawnGem(currentGem, gemWorldPos, gemBoardPos);
             }
         }
+    }
+    public Vector2 ConvertToWorldPosition( Vector2Int boardPos)
+    {
+        return new Vector2(boardPos.y * CellSpace, boardPos.x * CellSpace) - BoardOffset;
     }
     private void RemoveGemsFromBoard(HashSet<Gem> gemsToDestroy)
     {
@@ -112,5 +119,9 @@ public class BoardManager : MonoBehaviour
         gemAtStartPos.SetBoardPosition(newPosition);
         board[endRow, col] = gemAtStartPos;
         board[startRow, col] = null;
+    }
+    public void SetBoardData(int row , int col , Gem data)
+    {
+        board[row, col] = data ; 
     }
 }

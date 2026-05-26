@@ -7,11 +7,13 @@ public class SwapSystem : MonoBehaviour
 {
     private Match matchManager;
     private GravitySystem gravity;
+    private RefillSystem refill ; 
     public float swapDuration = 0.5f;
     void Start()
     {
         matchManager = GetComponent<Match>();
         gravity = GetComponent<GravitySystem>();
+        refill = GetComponent<RefillSystem>();
     }
     public bool IsAdjacent(Vector2Int currentGem, Vector2Int targetGem)
     {
@@ -43,9 +45,8 @@ public class SwapSystem : MonoBehaviour
             {
                 //  Debug.Log("MATCH") ; 
                 yield return matchManager.OnMatch();
-                gravity.CollapseBoardData();
-                yield return gravity.PlayFallingAnimation();
-
+                yield return gravity.OnDestroyedGems() ; 
+                refill.RefillBoardData() ; 
             }
             else
             {

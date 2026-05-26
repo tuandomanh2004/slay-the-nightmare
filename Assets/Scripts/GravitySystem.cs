@@ -15,6 +15,7 @@ public class GravitySystem : MonoBehaviour
     [SerializeField] private float delayAfterFalling = 0.5f;
     [SerializeField] private float fallingDuration = 0.2f;
 
+    public Dictionary<int , int> EmptySlotsPerColumn => emptySlotsPerColumn ; 
     void Start()
     {
         boardManager = GetComponent<BoardManager>();
@@ -70,5 +71,10 @@ public class GravitySystem : MonoBehaviour
             yield return seq.WaitForCompletion();
             yield return new WaitForSeconds(delayAfterFalling) ; 
         }
+    }
+    public IEnumerator OnDestroyedGems()
+    {
+        CollapseBoardData() ; 
+        yield return PlayFallingAnimation() ; 
     }
 }
