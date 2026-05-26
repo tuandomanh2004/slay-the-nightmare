@@ -25,10 +25,10 @@ public class Gem : MonoBehaviour
         BoardPosition = boardPosition;
         name = $"{type}";
     }
-    public Vector3 GetWorldPosition(Vector2Int boardPos)
+    public Vector2 GetWorldPosition(Vector2Int boardPos)
     {
-        Vector3 offset = new Vector3(BoardManager.BoardOffset.x , BoardManager.BoardOffset.y , 0f) ;
-        Vector3 GemWorldPos = new Vector3(boardPos.y * BoardManager.CellSpace , boardPos.x *BoardManager.CellSpace,0f) - offset ;
+        Vector2 offset = new Vector2(BoardManager.BoardOffset.x , BoardManager.BoardOffset.y ) ;
+        Vector2 GemWorldPos = new Vector2(boardPos.y * BoardManager.CellSpace , boardPos.x *BoardManager.CellSpace) - offset ;
         return GemWorldPos ;  
     }
     public void SetBoardPosition(Vector2Int boardPosition)
@@ -42,12 +42,12 @@ public class Gem : MonoBehaviour
     }
     public Tween SwapTo(Vector2Int swapPos , float duration)
     {
-        Vector3 worldPos = GetWorldPosition(swapPos);
+        Vector2 worldPos = GetWorldPosition(swapPos);
         return transform.DOLocalMove(worldPos,duration) ; 
     }
     public Tween Destroy(float duration)
     {
-        Vector3 targetScale = Vector3.zero; 
+        Vector2 targetScale = Vector3.zero; 
         return transform.DOScale(targetScale,duration) ;
     }
 }

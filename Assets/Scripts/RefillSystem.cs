@@ -26,19 +26,19 @@ public class RefillSystem : MonoBehaviour
             //Debug.Log(spawnQuantity);
             if (spawnQuantity == 0) continue;
 
-            gemsToSpawn[col] = SetGemDataToSpawnEachColumn(spawnQuantity, col);
+            gemsToSpawn[col] = GenerateGemPrefabs(spawnQuantity);
             for (int index = 0; index < spawnQuantity; index++)
             {
                 int row = boardManager.Height - spawnQuantity + index;
-                Gem currentGemData = gemsToSpawn[col][index] ; 
+                Gem currentGemPrefab = gemsToSpawn[col][index] ; 
                 Vector2Int gemPos=  new Vector2Int(row , col) ; 
-                Gem gemToSpawn = SpawnGemOnTop(currentGemData, gemPos);
+                Gem gemToSpawn = SpawnGemOnTop(currentGemPrefab, gemPos);
                 boardManager.SetBoardData(row, col, gemToSpawn);
             //  Debug.Log($"[{row},{col}] : {boardManager.Board[row, col]}");
             }
         }
     }
-    private List<Gem> SetGemDataToSpawnEachColumn(int quantity, int col)
+    private List<Gem> GenerateGemPrefabs(int quantity)
     {
         List<Gem> gems = new List<Gem>();
         for (int i = quantity; i > 0; i--)
