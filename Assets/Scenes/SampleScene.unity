@@ -295,6 +295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a636cd8cad36fc44da77cc3291854d1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  anim: {fileID: 351662468}
   heightScale: 9
   boardManager: {fileID: 0}
   gravity: {fileID: 0}

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -8,6 +9,7 @@ using UnityEngine.UIElements;
 
 public class RefillSystem : MonoBehaviour
 {
+    [SerializeField] private GemAnimation anim ; 
     [SerializeField] private float heightScale ; 
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private GravitySystem gravity;
@@ -26,33 +28,31 @@ public class RefillSystem : MonoBehaviour
             //Debug.Log(spawnQuantity);
             if (spawnQuantity == 0) continue;
 
-            gemsToSpawn[col] = GenerateGemPrefabs(spawnQuantity);
+            gemsToSpawn[col] = new List<Gem>();
             for (int index = 0; index < spawnQuantity; index++)
             {
                 int row = boardManager.Height - spawnQuantity + index;
-                Gem currentGemPrefab = gemsToSpawn[col][index] ; 
-                Vector2Int gemPos=  new Vector2Int(row , col) ; 
-                Gem gemToSpawn = SpawnGemOnTop(currentGemPrefab, gemPos);
-                boardManager.SetBoardData(row, col, gemToSpawn);
+                var gemBoardPos =  new Vector2Int(row , col) ; 
+                Gem gem = SpawnGemOnTop(boardManager.Gems , gemBoardPos) ; 
+        
+                boardManager.SetBoardData(gemBoardPos.x, gemBoardPos.y, gem);
+                gemsToSpawn[col].Add(gem);
             //  Debug.Log($"[{row},{col}] : {boardManager.Board[row, col]}");
             }
         }
     }
-    private List<Gem> GenerateGemPrefabs(int quantity)
+    public Gem SpawnGemOnTop(Gem[] gemPrefabs , Vector2Int boardPos)
     {
-        List<Gem> gems = new List<Gem>();
-        for (int i = quantity; i > 0; i--)
-        {
-            Gem randomGem = boardManager.GetRandomGem(boardManager.Gems.ToList());
-            gems.Add(randomGem);
-        }
-        return gems;
-    }
-    public Gem SpawnGemOnTop(Gem gem , Vector2Int boardPos)
-    {
+        int randomIndex = UnityEngine.Random.Range(0, gemPrefabs.Length);
         Vector2 worldPosOnBoard = boardManager.ConvertToWorldPosition(boardPos);
         Vector2 offset = Vector2.up * heightScale;
         Vector2 onTopPos = worldPosOnBoard + offset ; 
-        return boardManager.SpawnGem(gem , onTopPos , boardPos) ;   
+        return boardManager.SpawnGem(gemPrefabs[randomIndex] , onTopPos , boardPos) ;   
+    }
+    public IEnumerator OnRefilled()
+    {
+        RefillBoardData() ; 
+        Debug.Log(gemsToSpawn.Values) ; 
+        yield return anim.PlayFallingAnimation(gemsToSpawn) ; 
     }
 }

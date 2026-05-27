@@ -47,7 +47,7 @@ public class SwapSystem : MonoBehaviour
                 //  Debug.Log("MATCH") ; 
                 yield return matchManager.OnMatch();
                 yield return gravity.OnDestroyedGems() ; 
-                refill.RefillBoardData() ; 
+                yield return refill.OnRefilled()  ;
             }
             else
             {
