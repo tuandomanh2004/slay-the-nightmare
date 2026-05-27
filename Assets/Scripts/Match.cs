@@ -31,10 +31,10 @@ public class Match : MonoBehaviour
 
     [SerializeField] private int requiredAdjacentMatches = 2;
     [SerializeField] private HashSet<Gem> gemsToDestroy = new HashSet<Gem>() ; 
+    [SerializeField] private GemAnimation anim ; 
     [SerializeField] public static event Action<HashSet<Gem>> OnGemsDestroyed ;
     void Start()
     {
-
     }
     void Update()
     {
@@ -127,7 +127,7 @@ public class Match : MonoBehaviour
     public IEnumerator OnMatch()
     {
         OnGemsDestroyed?.Invoke(gemsToDestroy) ; 
-        yield return PlayGemDestroyAnimation() ; 
+        yield return anim.PlayGemDestroyAnimation(gemsToDestroy) ; 
         gemsToDestroy.Clear() ; 
     }
     public HashSet<Gem> GetGemsToDestroyOnBoard(Gem[,] board)
@@ -141,19 +141,6 @@ public class Match : MonoBehaviour
         }
         SetGemsToDestroy(gems) ; 
         return gemsToDestroy ; 
-    }
-    public IEnumerator PlayGemDestroyAnimation()
-    {
-        var seq = DOTween.Sequence() ; 
-        if(gemsToDestroy != null && gemsToDestroy.Count > 0)
-        {
-            foreach(var gem in gemsToDestroy)
-            {
-               // Debug.Log(gem) ; 
-                seq.Join(gem.Destroy(destroyDuration)) ; 
-            }
-        }
-        yield return seq.WaitForCompletion();
     }
     public void SetGemsToDestroy(HashSet<Gem> gems)
     {

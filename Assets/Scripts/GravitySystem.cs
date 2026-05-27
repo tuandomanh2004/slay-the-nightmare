@@ -10,6 +10,7 @@ using UnityEngine;
 public class GravitySystem : MonoBehaviour
 {
     [SerializeField] private BoardManager boardManager;
+    [SerializeField] private GemAnimation anim;
     [SerializeField] private Dictionary<int, List<Gem>> fallingGems;
     [SerializeField] private Dictionary<int,int> emptySlotsPerColumn ; 
     [SerializeField] private float delayAfterFalling = 0.5f;
@@ -75,6 +76,6 @@ public class GravitySystem : MonoBehaviour
     public IEnumerator OnDestroyedGems()
     {
         CollapseBoardData() ; 
-        yield return PlayFallingAnimation() ; 
+        yield return anim.PlayFallingAnimation(fallingGems) ; 
     }
 }

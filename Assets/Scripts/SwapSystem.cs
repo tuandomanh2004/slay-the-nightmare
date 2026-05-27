@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class SwapSystem : MonoBehaviour
 {
+    [SerializeField] private GemAnimation anim ; 
     private Match matchManager;
     private GravitySystem gravity;
     private RefillSystem refill ; 
-    public float swapDuration = 0.5f;
+    
     void Start()
     {
         matchManager = GetComponent<Match>();
@@ -40,7 +41,7 @@ public class SwapSystem : MonoBehaviour
 
             SwapBoardData(board, gemA, gemB);
             //  Debug.Log($"gemA : {gemA.name} {gemA.BoardPosition} , gemB : {gemB.name} {gemB.BoardPosition}");
-            yield return SwapAnimation(gemA, gemB);
+            yield return anim.PlaySwapAnimation(gemA, gemB);
             if (matchManager.HasMatch(board, gemA.BoardPosition, gemB.BoardPosition))
             {
                 //  Debug.Log("MATCH") ; 
@@ -51,19 +52,12 @@ public class SwapSystem : MonoBehaviour
             else
             {
                 SwapBoardData(board, gemA, gemB);
-                yield return SwapAnimation(gemA, gemB);
+                yield return anim.PlaySwapAnimation(gemA, gemB);
             }
             // Debug.Log($"{board[0,0].name} {board[0,0].BoardPosition} , {board[0,1].name} {board[0,1].BoardPosition}") ; 
         }
     }
-    public IEnumerator SwapAnimation(Gem gemA, Gem gemB)
-    {
-        // Create a container for managing tweens
-        Sequence seq = DOTween.Sequence();
-        seq.Join(gemA.SwapTo(gemA.BoardPosition, swapDuration));
-        seq.Join(gemB.SwapTo(gemB.BoardPosition, swapDuration));
-        yield return seq.WaitForCompletion();
-    }
+    
     public void UpdateGemPosition(Gem gemA, Gem gemB)
     {
         Vector2Int gemAPrevPos = gemA.BoardPosition;
