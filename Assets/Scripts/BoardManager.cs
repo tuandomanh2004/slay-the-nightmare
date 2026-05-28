@@ -22,7 +22,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private SwapSystem swapManager;
     public static Vector2 BoardOffset { get; private set; }
     public static float CellSpace { get; private set; } = 1.1f;
-    public Gem[] Gems => gems ; 
+    public Gem[] Gems => gems;
     public Gem[,] Board => board;
     public int Width => width;
     public int Height => height;
@@ -90,15 +90,15 @@ public class BoardManager : MonoBehaviour
                 }
                 var currentGem = GetRandomGem(possibleGems);
                 var gemBoardPos = new Vector2Int(y, x);
-              //  var gemWorldPos = new Vector2(x * CellSpace, y * CellSpace) - BoardOffset;
-                var gemWorldPos = ConvertToWorldPosition(gemBoardPos) ; 
+                //  var gemWorldPos = new Vector2(x * CellSpace, y * CellSpace) - BoardOffset;
+                var gemWorldPos = ConvertToWorldPosition(gemBoardPos);
                 //   Debug.Log(possibleGems.Count);
                 //  Debug.Log($"{currentGem} , {gemBoardPos} , {gemWorldPos}");
                 board[y, x] = SpawnGem(currentGem, gemWorldPos, gemBoardPos);
             }
         }
     }
-    public Vector2 ConvertToWorldPosition( Vector2Int boardPos)
+    public Vector2 ConvertToWorldPosition(Vector2Int boardPos)
     {
         return new Vector2(boardPos.y * CellSpace, boardPos.x * CellSpace) - BoardOffset;
     }
@@ -120,8 +120,22 @@ public class BoardManager : MonoBehaviour
         board[endRow, col] = gemAtStartPos;
         board[startRow, col] = null;
     }
-    public void SetBoardData(int row , int col , Gem data)
+    public void SetBoardData(int row, int col, Gem data)
     {
-        board[row, col] = data ; 
+        board[row, col] = data;
+    }
+
+    public void LogData()
+    {
+        for (int row = Height - 1; row >= 0; row--)  // ← Duyệt từ trên (cao) xuống dưới (thấp)
+        {
+            string line = "";
+            for (int col = 0; col < Width; col++)
+            {
+                line += Board[row, col] != null ? "X " : "O ";
+            }
+            Debug.Log(line);
+        }
+
     }
 }

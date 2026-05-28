@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SwapSystem : MonoBehaviour
 {
-    [SerializeField] private GemAnimation anim ; 
+    [SerializeField] private GemAnimation anim ;  
     private Match matchManager;
     private GravitySystem gravity;
     private RefillSystem refill ; 
@@ -44,9 +44,10 @@ public class SwapSystem : MonoBehaviour
             yield return anim.PlaySwapAnimation(gemA, gemB);
             if (matchManager.HasMatch(board, gemA.BoardPosition, gemB.BoardPosition))
             {
-                //  Debug.Log("MATCH") ; 
-                yield return matchManager.OnMatch();
+                yield return matchManager.OnMatch(); 
+                 
                 yield return gravity.OnDestroyedGems() ; 
+        
                 yield return refill.OnRefilled()  ;
             }
             else

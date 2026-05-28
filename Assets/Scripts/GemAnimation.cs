@@ -30,12 +30,15 @@ public class GemAnimation : MonoBehaviour
     }
     public IEnumerator PlayFallingAnimation(Dictionary<int , List<Gem>> falling)
     {
+        if (falling == null || falling.Count == 0) yield break;
+        
         foreach(var pair in falling.OrderBy( pair => pair.Key))
         {
             var seq =  DOTween.Sequence() ; 
             List<Gem> gems = pair.Value;
             foreach(var gem in gems)
             {
+                if (gem == null) continue;
                 seq.Join(gem.SwapTo(gem.BoardPosition, fallingDuration));
             }
             yield return seq.WaitForCompletion();
