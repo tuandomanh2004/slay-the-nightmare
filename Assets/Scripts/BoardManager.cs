@@ -29,13 +29,11 @@ public class BoardManager : MonoBehaviour
 
     void OnEnable()
     {
-        InputHandler.OnSwapRequested += TrySwapGem;
-        Match.OnGemsDestroyed += RemoveGemsFromBoard;
+       // Match.OnGemsDestroyed += RemoveGemsFromBoard;
     }
     void OnDisable()
     {
-        InputHandler.OnSwapRequested -= TrySwapGem;
-        Match.OnGemsDestroyed -= RemoveGemsFromBoard;
+       // Match.OnGemsDestroyed -= RemoveGemsFromBoard;
     }
     void Start()
     {
@@ -63,7 +61,7 @@ public class BoardManager : MonoBehaviour
     }
     public void TrySwapGem(Gem gemA, Gem gemB)
     {
-        StartCoroutine(swapManager.SwapRoutine(board, gemA, gemB));
+        StartCoroutine(swapManager.SwapRoutine(gemA, gemB));
     }
     private void InitBoard()
     {
@@ -102,7 +100,7 @@ public class BoardManager : MonoBehaviour
     {
         return new Vector2(boardPos.y * CellSpace, boardPos.x * CellSpace) - BoardOffset;
     }
-    private void RemoveGemsFromBoard(HashSet<Gem> gemsToDestroy)
+    public void RemoveGemsFromBoard(HashSet<Gem> gemsToDestroy)
     {
         foreach (var gem in gemsToDestroy)
         {
@@ -112,7 +110,7 @@ public class BoardManager : MonoBehaviour
         }
 
     }
-    public void MoveGemAtCol(int col, int startRow, int endRow)
+    public void MoveGemAt(int col, int startRow, int endRow)
     {
         var gemAtStartPos = board[startRow, col];
         var newPosition = new Vector2Int(endRow, col);

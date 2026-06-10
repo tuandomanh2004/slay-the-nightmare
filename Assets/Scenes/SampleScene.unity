@@ -182,6 +182,7 @@ GameObject:
   - component: {fileID: 373997279}
   - component: {fileID: 373997280}
   - component: {fileID: 373997281}
+  - component: {fileID: 373997282}
   m_Layer: 0
   m_Name: Board Manager
   m_TagString: Untagged
@@ -250,6 +251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b0cf4219e14d644891bf7285921c286, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  board: {fileID: 0}
   anim: {fileID: 351662468}
 --- !u!114 &373997279
 MonoBehaviour:
@@ -263,6 +265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c0f936ec8345104587a3e8709067ece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  board: {fileID: 0}
   minGemToMatch: 3
   destroyDuration: 0.3
   requiredAdjacentMatches: 2
@@ -297,8 +300,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anim: {fileID: 351662468}
   heightScale: 9
-  boardManager: {fileID: 0}
+  boardManager: {fileID: 373997275}
   gravity: {fileID: 0}
+--- !u!114 &373997282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373997274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f56d462ca94a5484db3a00e570f4355c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  match: {fileID: 0}
+  swap: {fileID: 0}
+  gravity: {fileID: 0}
+  refill: {fileID: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

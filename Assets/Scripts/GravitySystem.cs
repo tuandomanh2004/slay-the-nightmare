@@ -46,12 +46,8 @@ public class GravitySystem : MonoBehaviour
                     {
                         Debug.Log($" {col} , {row} , {posToFall}");
                         int fallingDistance = row - posToFall;
-                        if (!fallingGems.ContainsKey(fallingDistance))
-                        {
-                            fallingGems[fallingDistance] = new List<Gem>();
-                        }
-                        fallingGems[fallingDistance].Add(currentGem);
-                        boardManager.MoveGemAtCol(col, row, posToFall);
+                        SetFallingGemsByDistance(fallingDistance , currentGem);
+                        boardManager.MoveGemAt(col, row, posToFall);
                         Debug.Log($"After Swap -> [{row},{col}] : {boardManager.Board[row, col]}, [{posToFall},{col}] :{boardManager.Board[posToFall, col]}");
                     }
 
@@ -60,6 +56,14 @@ public class GravitySystem : MonoBehaviour
             }
             emptySlotsPerColumn[col] = height - posToFall;
         }
+    }
+    private void SetFallingGemsByDistance(int distance, Gem gem)
+    {
+        if (!fallingGems.ContainsKey(distance))
+        {
+            fallingGems[distance] = new List<Gem>();
+        }
+        fallingGems[distance].Add(gem);
     }
     public IEnumerator PlayFallingAnimation()
     {
@@ -78,7 +82,6 @@ public class GravitySystem : MonoBehaviour
     public IEnumerator OnDestroyedGems()
     {
         CollapseBoardData();
-        //   boardManager.LogData();
         yield return anim.PlayFallingAnimation(fallingGems);
     }
 }

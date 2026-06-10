@@ -12,6 +12,7 @@ using Unity.Collections;
 
 public class Match : MonoBehaviour
 {
+    [SerializeField] private BoardManager board ; 
     [SerializeField] private int minGemToMatch ; 
     [SerializeField] private float destroyDuration = 0.3f;
     public class MatchGroup
@@ -32,26 +33,33 @@ public class Match : MonoBehaviour
     [SerializeField] private int requiredAdjacentMatches = 2;
     [SerializeField] private HashSet<Gem> gemsToDestroy = new HashSet<Gem>() ; 
     [SerializeField] private GemAnimation anim ; 
-    [SerializeField] public static event Action<HashSet<Gem>> OnGemsDestroyed ;
+ //   [SerializeField] public static event Action<HashSet<Gem>> OnGemsDestroyed ;
     void Start()
     {
+        board = GetComponent<BoardManager>();
     }
     void Update()
     {
 
     }
-    public bool HasMatch(Gem[,] board, Vector2Int gemAPos, Vector2Int gemBPos)
+    public bool HasMatch( Vector2Int gemAPos, Vector2Int gemBPos)
     {
-        HashSet<Gem> matchedGemsA = GetMatchedGemsAt(board, gemAPos) ;
-        HashSet<Gem> matchedGemsB = GetMatchedGemsAt(board, gemBPos) ; 
+        HashSet<Gem> matchedGemsA = GetMatchedGemsAt(gemAPos) ;
+        HashSet<Gem> matchedGemsB = GetMatchedGemsAt(gemBPos) ; 
         matchedGemsA.UnionWith(matchedGemsB);
         gemsToDestroy = matchedGemsA;
         return gemsToDestroy.Count > 0 ;
     }
-    public HashSet<Gem> GetMatchedGemsAt(Gem[,] board, Vector2Int pos)
+    public bool HasMatchOnBoard()
     {
-        var horizontalMatches = GetHorizontalMatchesOnBoard(board, pos); 
-        var verticalMatches = GetVerticalMatchesOnBoard(board, pos) ;
+        HashSet<Gem> matchedGems = GetGemsToDestroyOnBoard() ; 
+        SetGemsToDestroy(matchedGems) ;
+        return gemsToDestroy.Count > 0 ; 
+    }
+    public HashSet<Gem> GetMatchedGemsAt(Vector2Int pos)
+    {
+        var horizontalMatches = GetHorizontalMatchesOnBoard( pos); 
+        var verticalMatches = GetVerticalMatchesOnBoard( pos) ;
 
         var horizontalGemsToDestroy = GetGemsToDestroy(horizontalMatches) ; 
         var verticalGemsToDestroy = GetGemsToDestroy(verticalMatches) ; 
@@ -59,10 +67,10 @@ public class Match : MonoBehaviour
         horizontalGemsToDestroy.UnionWith(verticalGemsToDestroy) ; 
         return horizontalGemsToDestroy ;
     } 
-    public List<MatchGroup> GetHorizontalMatchesOnBoard(Gem[,] board, Vector2Int gemPos)
+    public List<MatchGroup> GetHorizontalMatchesOnBoard(Vector2Int gemPos)
     {
         int verticalIndex = gemPos.x;
-        int boardWidth = board.GetLength(1);
+        int boardWidth = board.Board.GetLength(1);
         var matches = new List<MatchGroup>();
         
         int start = 0;
@@ -70,7 +78,7 @@ public class Match : MonoBehaviour
         {
             int end = start;
             // Tìm dãy liên tiếp cùng loại
-            while (end < boardWidth && board[verticalIndex, end].Type == board[verticalIndex, start].Type)
+            while (end < boardWidth && board.Board[verticalIndex, end].Type == board.Board[verticalIndex, start].Type)
             {
                 end++;
             }
@@ -81,7 +89,7 @@ public class Match : MonoBehaviour
                 var match = new MatchGroup();
                 for (int i = start; i < end; i++)
                 {
-                    match.matchedGems.Add(board[verticalIndex, i]);
+                    match.matchedGems.Add(board.Board[verticalIndex, i]);
                 }
                 match.Length = end - start;
                 matches.Add(match);
@@ -92,10 +100,10 @@ public class Match : MonoBehaviour
         
         return matches;
     }
-    public List<MatchGroup> GetVerticalMatchesOnBoard(Gem[,] board, Vector2Int gemPos)
+    public List<MatchGroup> GetVerticalMatchesOnBoard(Vector2Int gemPos)
     {
         int horizontalIndex = gemPos.y;
-        int boardHeight = board.GetLength(0);
+        int boardHeight = board.Board.GetLength(0);
         var matches = new List<MatchGroup>();
         
         int start = 0;
@@ -103,7 +111,7 @@ public class Match : MonoBehaviour
         {
             int end = start;
             // Tìm dãy liên tiếp cùng loại
-            while (end < boardHeight && board[end, horizontalIndex].Type == board[start, horizontalIndex].Type)
+            while (end < boardHeight && board.Board[end, horizontalIndex].Type ==board.Board[start, horizontalIndex].Type)
             {
                 end++;
             }
@@ -114,7 +122,7 @@ public class Match : MonoBehaviour
                 var match = new MatchGroup();
                 for (int i = start; i < end; i++)
                 {
-                    match.matchedGems.Add(board[i, horizontalIndex]);
+                    match.matchedGems.Add(board.Board[i, horizontalIndex]);
                 }
                 match.Length = end - start;
                 matches.Add(match);
@@ -126,21 +134,19 @@ public class Match : MonoBehaviour
     }
     public IEnumerator OnMatch()
     {
-        OnGemsDestroyed?.Invoke(gemsToDestroy) ; 
-        yield return anim.PlayGemDestroyAnimation(gemsToDestroy) ; 
-        gemsToDestroy.Clear() ; 
+        board.RemoveGemsFromBoard(gemsToDestroy) ; 
+        yield return anim.PlayGemDestroyAnimation(gemsToDestroy) ;  
     }
-    public HashSet<Gem> GetGemsToDestroyOnBoard(Gem[,] board)
+    public HashSet<Gem> GetGemsToDestroyOnBoard()
     {
         HashSet<Gem> gems = new HashSet<Gem>();
-        for(int i = 0 ; i < board.GetLength(0) ; i++)
+        for(int i = 0 ; i < board.Board.GetLength(0) ; i++)
         {
             Vector2Int pos = new Vector2Int(i,i) ; 
-            HashSet<Gem> matchedGems = GetMatchedGemsAt(board,pos) ;  
+            HashSet<Gem> matchedGems = GetMatchedGemsAt(pos) ;  
             gems.UnionWith(matchedGems) ;                 
         }
-        SetGemsToDestroy(gems) ; 
-        return gemsToDestroy ; 
+        return gems ; 
     }
     public void SetGemsToDestroy(HashSet<Gem> gems)
     {

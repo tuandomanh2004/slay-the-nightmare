@@ -17,7 +17,7 @@ public class RefillSystem : MonoBehaviour
     [SerializeField] private Dictionary<int, List<Gem>> gemsToSpawn = new Dictionary<int, List<Gem>>();
     void Start()
     {
-        // boardManager = GetComponent<BoardManager>();
+        boardManager = GetComponent<BoardManager>();
         gravity = GetComponent<GravitySystem>();
     }
     public void RefillBoardData()
@@ -32,18 +32,21 @@ public class RefillSystem : MonoBehaviour
             }
             //Debug.Log(spawnQuantity);
             if (spawnQuantity == 0) continue;
+            RefillAtCol(col , spawnQuantity) ; 
+        }
+    }
+    private void RefillAtCol(int col , int spawnQuantity)
+    {
+        gemsToSpawn[col] = new List<Gem>();
+        for (int index = 0; index < spawnQuantity; index++)
+        {
+            int rowToSpawn = boardManager.Height - spawnQuantity + index;
+            var gemBoardPos = new Vector2Int(rowToSpawn, col);
+            Gem gem = SpawnGemOnTop(boardManager.Gems, gemBoardPos);
 
-            gemsToSpawn[col] = new List<Gem>();
-            for (int index = 0; index < spawnQuantity; index++)
-            {
-                int row = boardManager.Height - spawnQuantity + index;
-                var gemBoardPos = new Vector2Int(row, col);
-                Gem gem = SpawnGemOnTop(boardManager.Gems, gemBoardPos);
-
-                boardManager.SetBoardData(gemBoardPos.x, gemBoardPos.y, gem);
-                gemsToSpawn[col].Add(gem);
-                //  Debug.Log($"[{row},{col}] : {boardManager.Board[row, col]}");
-            }
+            boardManager.SetBoardData(gemBoardPos.x, gemBoardPos.y, gem);
+            gemsToSpawn[col].Add(gem);
+            //  Debug.Log($"[{row},{col}] : {boardManager.Board[row, col]}");
         }
     }
     public Gem SpawnGemOnTop(Gem[] gemPrefabs, Vector2Int boardPos)
